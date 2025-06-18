@@ -11,33 +11,44 @@ def sudokuGenerator(d, row):
             
 sudokuGenerator(3, list(range(1, 10)))
 
-# can generate a 2D grid of random numbers ranging from 1-9 - need to add checks
-print("Generating the grid!")
+# initialising a 2D grid with only 0s
+print("Generating an empty grid!")
 def generate_grid(row, col):
     grid = [[0 for j in range(col)] for i in range(row)]
     return grid
-#print(len(grid))
+
 grid = generate_grid(9, 9)
-
-print("Printing the 2D array:")
-for i in range(0, 9, 1):
-    x = list(range(1, 10))
-    random.shuffle(x)
-    for j in range(0, 9, 1):
-        #print(f"row: {i}, col: {j}, {grid[i]}, {grid[j]}")
-        res = random.choice(x)
-        grid[i][j] = res
-        x.remove(res)
 print(grid)
+print("\n")
 
+# Filling the initialised grid with random numbers from 1-9 for each row
+print("Filling in the grid:")
+def fill_grid(grid):
+    for i in range(0, 9, 1):
+        x = list(range(1, 10))
+        random.shuffle(x)
+        for j in range(0, 9, 1):
+            #print(f"row: {i}, col: {j}, {grid[i]}, {grid[j]}")
+            res = random.choice(x) # only choosing from the generated list to avoid repetition
+            grid[i][j] = res
+            x.remove(res)
+    return grid
+
+grid = fill_grid(grid)
+print(grid)
+print("\n")
+
+# Formatting the output of the 2D array to visualise as a sudoku grid
 print("Sudoku Grid:")
 print("---------------------------")
 def print_grid(grid):
-    for i in range(0, len(grid), 3):
+    for i in range(0, len(grid), 3): # starts at 0th, 6th, and 9th rows
+        # for each of the 3 rows
         row1 = grid[i]
         row2 = grid[i+1]
         row3 = grid[i+2]
         for j in range(0, len(row1), 3):
+            # select the same 3 elements from each row at the same time and concatenate them
             sub_row1 = row1[j:j+3]
             row1_to_s = ' '.join(map(str, sub_row1))
             sub_row2 = row2[j:j+3]

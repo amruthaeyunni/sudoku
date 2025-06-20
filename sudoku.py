@@ -1,4 +1,5 @@
 import random
+import math
 
 class Sudoku:
     # Initialise a 1D grid/array:
@@ -29,7 +30,6 @@ class Sudoku:
     # Function to just print the array as a sudoku grid
     def print_grid(self, grid):
         print("---------------------------")
-
         for j in range(0, len(grid), 9):
             if j == 27 or j == 54 or j == 81: # to draw lines only
                 print("---------------------------")
@@ -136,6 +136,83 @@ class Sudoku:
 
         return row3_shuffled
 
+    def remove_digits(self, grid, n):
+        indices = random.sample(range(0, self.max_value), n)
+        index_to_number = {}
+        for i in range(len(indices)):
+            index_to_number[indices[i]] = grid[indices[i]]
+            #print(f"Index is: {indices[i]}, and grid number is: {grid[indices[i]]}")
+        for j in range(len(grid)):
+            if j in index_to_number.keys(): # if the grid index to remove is in the dictionary
+                grid[j] = 0 # replace the value at that grid index with a 0
+        return grid
+    
+    def is_valid(self, grid, num, index):
+        row = index // 9 # retrieve the row of the number
+        col = index % 9 # retrieve the column of the number
+
+        # checking the row
+        for i in range(9):
+            index_in_row = row*9 + i
+            # if the number at the current index already contains num and it is not the cell
+            # currently being tested (inputted with num)
+            if grid[index_in_row] == num and index_in_row != index:
+                return False
+        
+        # checking the column
+        for i in range(9):
+            index_in_col = i*9 + col
+            if grid[index_in_col] == num and index_in_col != index:
+                return False
+            
+        # checking the box
+        row_start = (row // 3) * 3
+        col_start = (col // 3) * 3
+        for r in range(3):
+            for c in range(3):
+                r_box = row_start + r
+                c_box = col_start + c
+                index_box = r_box * 9 + c_box
+
+                if grid[index_box] == num and index_box != index:
+                    return False
+                
+        return True # the number is not in the row, column or box so is valid at the current index
+
+    # A method to find the next empty cell in the grid 
+    def find_empty(self, grid):
+        for i in range(len(grid)):
+            if grid[i] == 0:
+                return i # return the index of the empty cell
+        return None # no empty cells so the grid is solved
+    
+    def solve_sudoku(self, grid):
+        empty_cell = self.find_empty(grid) # first see if there are any empty cells
+        if empty_cell is None:  # no empty cells found in the grid
+            print("Grid has been solved!")
+            self.print_grid(grid)
+            return True # exit the method
+        row = empty_cell // 9 # find the row of the empty cell
+        col = empty_cell % 9 # find the column of the empty cell
+        for i in range(1, 10): # test each number in the empty cell
+            can_place_in_cell = self.is_valid(grid, i, empty_cell)
+            print(f"Empty cell is: {empty_cell}, value at empty cell is: {grid[empty_cell]}")
+            print(f"Row: [{row}], Col: [{col}], Value: {i}")
+            print(f"Can place in cell?: {can_place_in_cell}")
+            if can_place_in_cell:
+                grid[empty_cell] = i
+                print(f"Placing {i} in [{row}][{col}] at index {empty_cell}")
+                self.print_grid(grid)
+                res = self.solve_sudoku(grid) # check if the grid has been solved now
+                if res:
+                    return True
+                else:
+                    grid[empty_cell] = 0 # undo the change if the current number (i) can't be placed in this cell
+                    print(f"Backtracking: Removed {i} from [{row}][{col}] at index {empty_cell}")
+                    self.print_grid(grid)
+        return False # no valid num found for this cell
+
+
 
 def main():
     sudoku = Sudoku()
@@ -145,13 +222,23 @@ def main():
     filled_grid = sudoku.fill_grid(sudoku.grid, indices_to_shift)
     #print(filled_grid)
 
-    print("Populating the grid:")
+    print("Grid has been generated!")
     sudoku.print_grid(filled_grid)
 
-    print("Printing the shuffled grid:")
+    print("Grid has been shuffled!")
     shuffled_grid = sudoku.shuffle(filled_grid)
     sudoku.print_grid(shuffled_grid)
 
+    print("Grid ready to solve!")
+    puzzle = sudoku.remove_digits(shuffled_grid, 10)
+    sudoku.print_grid(puzzle)
+
+    print("Solving the grid!")
+    solved = sudoku.solve_sudoku(puzzle)
+
+    if not solved:
+        print("Could not solve the grid")
+        
 
 if __name__ == "__main__":
     main()

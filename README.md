@@ -1,6 +1,7 @@
 # Sudoku Generator and Solver
 ## Overview
 The **sudoku.py** file generates a valid sudoku grid on every run, shuffles it and removes the desired number of elements from the grid to generate a puzzle to solve. The solve_sudoku method is called recursively to solve the puzzle and check if the entire grid has been filled!
+![Full Grid](sudoku_screenshot.png)
 
 ## Detailed description of each method
 Firstly, all the methods are part of the **Sudoku** class to ensure maintainability and for readability.

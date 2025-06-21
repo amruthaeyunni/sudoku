@@ -1,5 +1,4 @@
 import random
-import math
 
 class Sudoku:
     # Initialise a 1D grid/array:
